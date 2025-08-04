@@ -1,25 +1,25 @@
 {
-    "name": "otus-qajs",
+    "name": "my-project",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
         "start": "node src/main.js",
         "lint:ci": "eslint .",
-        "lint": "eslint . --fix",
-         "lint:ci": "prettier . --check",
-    "lint": "prettier . --write"
+        "lint": "eslint . --fix"
     },
-    "author": "Damir Rysaev <freepad@ya.ru>",
+    "author": "Angelinch <tutapochta@ya.ru>",
     "keywords": [],
     "license": "ISC",
     "devDependencies": {
-        "@eslint/js": "^9.18.0",
-        "eslint": "^9.18.0",
+        "@eslint/js": "^9.32.0",
+        "eslint": "^9.32.0",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-prettier": "^5.2.3",
-        "globals": "^15.14.0",
-        "npm-run-all": "^7.0.2",
-        "prettier": "^3.4.2"
+        "eslint-plugin-vue": "^10.3.0",
+        "globals": "^15.15.0",
+        "npm-run-all2": "^7.0.2",
+        "prettier": "^3.4.2",
+        "typescript-eslint": "^8.38.0"
     }
 }
