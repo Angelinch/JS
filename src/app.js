@@ -14,3 +14,18 @@ module.exports = {
   fullTrim,
   getTotal
 }
+// src/app.js
+function getScore(scores) {
+  // Получаем все значения из объекта (баллы)
+  const values = Object.values(scores);
+  // Суммируем все баллы и возвращаем результат
+  return values.reduce((acc, curr) => acc + curr, 0)
+}
+
+const scores = {
+  Anna: 10,
+  Olga: 1,
+  Ivan: 5,
+};
+
+console.log(getScore(scores)); // Ожидаем 16
