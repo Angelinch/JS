@@ -1,10 +1,14 @@
-const request = require('supertest')
-const { baseURL } = require('../config')
+const request = require('supertest');
+const { baseURL } = require('../config');
 
-const api = request(baseURL)
+const api = request(baseURL);
 
 async function authorize(userName, password) {
-  return api.post('/Account/v1/Authorized').send({ userName, password })
+  return api.post('/Account/v1/Authorized').send({ userName, password });
 }
 
-module.exports = { authorize }
+async function generateToken(userName, password) {
+  return api.post('/Account/v1/GenerateToken').send({ userName, password });
+}
+
+module.exports = { authorize, generateToken };
