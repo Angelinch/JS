@@ -1,4 +1,14 @@
+// jest.config.js
 module.exports = {
   testEnvironment: 'node',
-  verbose: true
+  verbose: true,
+  reporters: [
+    'default',
+    [
+      'jest-allure',
+      {
+        outputDirectory: 'allure-results',
+      },
+    ],
+  ],
 };

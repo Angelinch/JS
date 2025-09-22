@@ -7,12 +7,15 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest"
+  "test": "jest",
+  "allure:report": "npx allure generate \"allure-results\" --clean -o \"allure-report\"",
+  "allure:open": "npx allure open \"allure-report\""
   },
   "devDependencies": {
     "allure-commandline": "^2.34.1",
     "allure-jest": "^3.4.1",
     "jest": "^30.0.5",
+    "jest-allure": "^0.1.3",
     "supertest": "^7.1.4"
   },
   "repository": {
@@ -25,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/Angelinch/JS/issues"
   },
-  "homepage": "https://github.com/Angelinch/JS#readme"
+  "homepage": "https://github.com/Angelinch/JS#readme",
+  "test": "jest",
+  "allure:report": "allure generate allure-results --clean -o allure-report",
+  "allure:open": "allure open allure-report"
 }
