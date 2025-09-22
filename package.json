@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "devDependencies": {
+    "allure-commandline": "^2.34.1",
+    "allure-jest": "^3.4.1",
     "jest": "^30.0.5",
     "supertest": "^7.1.4"
   },
