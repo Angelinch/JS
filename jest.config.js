@@ -5,10 +5,10 @@ module.exports = {
   reporters: [
     'default',
     [
-      'jest-allure',
+      'jest-allure2',
       {
-        outputDirectory: 'allure-results',
-      },
-    ],
-  ],
-};
+        resultsDir: 'reports/allure-results'
+      }
+    ]
+  ]
+}
