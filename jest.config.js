@@ -4,11 +4,8 @@ module.exports = {
   verbose: true,
   reporters: [
     'default',
-    [
-      'jest-allure2',
-      {
-        resultsDir: 'reports/allure-results'
-      }
-    ]
+    ['allure-jest', {
+      outputDirectory: 'reports/allure-results'
+    }]
   ]
-}
+};
