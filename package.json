@@ -29,8 +29,5 @@
   "bugs": {
     "url": "https://github.com/Angelinch/JS/issues"
   },
-  "homepage": "https://github.com/Angelinch/JS#readme",
-  "test": "jest",
-  "allure:report": "allure generate allure-results --clean -o allure-report",
-  "allure:open": "allure open allure-report"
+  "homepage": "https://github.com/Angelinch/JS#readme"
 }
