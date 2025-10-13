@@ -1,3 +1,4 @@
+console.log('>>> Allure тест стартовал');
 const request = require('supertest');
 const { baseURL, authData } = require('../config');
 
