@@ -7,15 +7,16 @@
     "test": "tests"
   },
   "scripts": {
-  "test": "jest",
-  "allure:report": "npx allure generate \"allure-results\" --clean -o \"allure-report\"",
-  "allure:open": "npx allure open \"allure-report\""
+    "test": "jest",
+    "allure:report": "npx allure generate \"allure-results\" --clean -o \"allure-report\"",
+    "allure:open": "npx allure open \"allure-report\""
   },
   "devDependencies": {
     "allure-commandline": "^2.34.1",
     "allure-jest": "^3.4.1",
     "jest": "^30.0.5",
-    "jest-allure": "^0.1.3",
+    "jest-circus": "^30.2.0",
+    "jest-environment-node": "^30.2.0",
     "supertest": "^7.1.4"
   },
   "repository": {
