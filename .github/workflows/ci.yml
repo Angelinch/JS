@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-and-deploy:
+  test-and-report:
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: "--max-old-space-size=1024"
@@ -27,14 +27,13 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Deploy HTML report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: github-pages
-          publish_dir: ./reports/html
-          user_name: github-actions
-          user_email: github-actions@github.com
+      - name: Commit and push test report
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add reports/html
+          git commit -m "Update test report [skip ci]" || echo "No changes to commit"
+          git push origin develop
 
       - name: Send Telegram notification
         uses: appleboy/telegram-action@v0.7.0
@@ -42,6 +41,5 @@ jobs:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
           message: |
-            CI/CD workflow finished.
-            Test report: https://<your-username>.github.io/<your-repo-name>/report.html
-            
+            ✅ CI/CD workflow finished
+            Test report: https://<your-username>.github.io/<your-repo-name>/reports/html/report.html
