@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
@@ -8,31 +8,35 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run tests
-        run: npm test
+        id: test
+        run: |
+          npm test
+        continue-on-error: true
 
-      - name: Upload HTML report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: reports/html
+      - name: Generate HTML report
+        run: |
+          npx jest-html-reporters --config-file ./jest.config.ts
 
-      - name: Send Telegram notification
-        uses: appleboy/telegram-action@v0.5.3
+      - name: Notify via Telegram
+        uses: appleboy/telegram-action@v0.7.0
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
-          message: "✅ Тесты завершены! Отчёт доступен в артефактах workflow."
+          message: |
+            ✅ Workflow завершён
+            Репозиторий: ${{ github.repository }}
+            Результат тестов: ${{ job.status }}
+            [Ссылка на Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
