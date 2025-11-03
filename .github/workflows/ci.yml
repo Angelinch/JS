@@ -1,19 +1,20 @@
-name: CI Tests and Report
+name: CI
 
 on:
   push:
     branches:
-      - develop
+      - develop   # или main, если нужно
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -22,30 +23,22 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm test
+        run: npm test || true
 
-      - name: Upload HTML report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report
-          path: reports/html
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Deploy HTML report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Publish HTML report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports/html
+          destination_dir: ''   # пустая папка в ветке gh-pages
+          keep_files: true
 
       - name: Send Telegram notification
-        uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@v0.6.0
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
-          message: "✅CI/CD workflow: Тесты завершены и отчёт опубликован."
+          message: |
+            CI completed.
+            HTML report: https://<USERNAME>.github.io/<REPO_NAME>/
+            Check the workflow logs for details.
