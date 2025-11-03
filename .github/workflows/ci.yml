@@ -36,7 +36,7 @@ jobs:
           git push origin develop
 
       - name: Send Telegram notification
-        uses: appleboy/telegram-action@v0.7.0
+        uses: appleboy/telegram-action@v0.0.6
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
