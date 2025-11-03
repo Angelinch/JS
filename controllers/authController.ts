@@ -1,6 +1,6 @@
 import request, { Response } from 'supertest';
 
-const api = request('https://demoqa.com');
+const api = request('https://bookstore.demoqa.com'); // ✅ исправлено
 
 export const generateToken = async (username: string, password: string): Promise<Response> => {
   return api

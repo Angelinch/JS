@@ -3,12 +3,19 @@ import type { Config } from '@jest/types';
 const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testTimeout: 30000, // на случай асинхронных тестов
+  testTimeout: 30000,
   reporters: [
     'default',
-    ['jest-allure', { outputDirectory: './allure-results' }]
+    ['jest-html-reporters', {
+      publicPath: './reports/html',
+      filename: 'report.html',
+      expand: true,
+      pageTitle: 'Bookstore Demo Tests'
+    }]
   ],
-  // globals больше не используем, ts-jest берёт настройки из tsconfig.json
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {}]
+  }
 };
 
 export default config;

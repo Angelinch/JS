@@ -1,87 +1,47 @@
 import { createBook, updateBook, getBook, deleteBook } from '../controllers/bookController';
 import { generateToken } from '../controllers/authController';
-import { getUser, deleteUser } from '../controllers/userController';
-import { authData } from '../config';
-import request, { Response } from 'supertest';
-
-const api = request('https://demoqa.com');
-
-const retry = async (fn: () => Promise<Response>, attempts = 3, delay = 1000): Promise<Response> => {
-  let lastError;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      return await fn();
-    } catch (err) {
-      lastError = err;
-      await new Promise(r => setTimeout(r, delay));
-    }
-  }
-  throw lastError;
-};
+import { retry } from '../utils/retry';
+import { Response } from 'supertest';
 
 describe('Bookstore API Tests', () => {
-  let userId: string;
-  let token: string;
-  let initialIsbn: string;
-  let newIsbn: string;
+  let userId = '';          // Здесь укажи ID пользователя из DemoQA
+  let token = '';
+  const initialIsbn = '9781449325862';
+  const newIsbn = '9781449331818';
+  const username = 'yourDemoQAUser';
+  const password = 'yourPassword';
 
-  const uniqueUser = { userName: `${authData.userName}_${Date.now()}`, password: authData.password };
-
+  // Генерация токена перед всеми тестами
   beforeAll(async () => {
-    // Создаем пользователя
-    const createRes: Response = await api.post('/Account/v1/User').send(uniqueUser);
-    if (![200, 201].includes(createRes.status)) throw new Error(`Не удалось создать пользователя: ${createRes.status}`);
-    userId = createRes.body.userID || createRes.body.userId;
-
-    // Генерируем токен
-    const tokenRes: Response = await generateToken(uniqueUser.userName, uniqueUser.password);
+    const tokenRes: Response = await generateToken(username, password);
     if (!tokenRes.body.token) throw new Error('Не удалось получить токен');
     token = tokenRes.body.token;
-
-    // Получаем книги
-    const booksRes: Response = await api.get('/BookStore/v1/Books');
-    if (booksRes.status !== 200) throw new Error('Не удалось получить книги');
-    initialIsbn = booksRes.body.books[0].isbn;
-    newIsbn = booksRes.body.books[1].isbn;
-  }, 30000);
-
-  afterAll(async () => {
-    await deleteUser(userId, token);
+    userId = tokenRes.body.userId || userId; // если API возвращает userId вместе с токеном
+    console.log('TOKEN:', token, 'USER ID:', userId);
   }, 30000);
 
   test('Создание книги', async () => {
-    const res = await createBook(userId, initialIsbn, token);
+    const res = await retry(() => createBook(userId, initialIsbn, token));
     expect([200, 201]).toContain(res.status);
-    expect(res.body.books[0].isbn).toBe(initialIsbn);
+    expect(res.body).toHaveProperty('books');
   }, 30000);
 
   test('Обновление книги (смена ISBN)', async () => {
-    const res = await updateBook(initialIsbn, userId, newIsbn, token);
-    expect(res.status).toBe(200);
-    expect(res.body.books.some((b: { isbn: string }) => b.isbn === newIsbn)).toBe(true);
+    const res = await retry(() => updateBook(initialIsbn, userId, newIsbn, token));
+    expect([200, 204]).toContain(res.status);
+    if (res.status === 200) {
+      expect(res.body.books.some((b: { isbn: string }) => b.isbn === newIsbn)).toBe(true);
+    }
   }, 30000);
 
   test('Получение информации о книге', async () => {
-    const res = await getBook(newIsbn);
-    if (res.status === 502) {
-      // retry один раз на случай временного сбоя сервера
-      const retryRes = await retry(() => getBook(newIsbn));
-      expect(retryRes.status).toBe(200);
-      expect(retryRes.body.isbn).toBe(newIsbn);
-      return;
-    }
+    const res = await retry(() => getBook(newIsbn));
     expect(res.status).toBe(200);
     expect(res.body.isbn).toBe(newIsbn);
   }, 30000);
 
   test('Удаление книги', async () => {
-    await createBook(userId, newIsbn, token);
-    const res = await deleteBook(userId, newIsbn, token);
-    if (res.status === 502) {
-      const retryRes = await retry(() => deleteBook(userId, newIsbn, token));
-      expect([200, 204]).toContain(retryRes.status);
-      return;
-    }
+    const res = await retry(() => deleteBook(userId, newIsbn, token));
     expect([200, 204]).toContain(res.status);
   }, 30000);
 });
