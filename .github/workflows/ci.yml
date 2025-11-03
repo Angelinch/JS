@@ -1,24 +1,22 @@
-name: CI Tests and Report
+name: CI Tests and Reports
 
 on:
   push:
     branches:
-      - develop
+      - develop   # запускаем на ветке develop
   pull_request:
-    branches:
-      - develop
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22'   # или используем актуальную LTS версию
 
       - name: Install dependencies
         run: npm ci
@@ -26,40 +24,28 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Upload Jest HTML Report
+      - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jest-html-report
+          name: html-report
           path: reports/html
 
   deploy:
-    runs-on: ubuntu-latest
     needs: test
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Deploy HTML report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
         with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Jest HTML Report
-        run: npm test
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v5
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
           publish_dir: ./reports/html
-          publish_branch: gh-pages
 
-      - name: Notify Telegram
-        uses: appleboy/telegram-action@master
+      - name: Send Telegram notification
+        uses: appleboy/telegram-action@v0.6.0
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
-          message: "CI completed! Check the report at https://<your-username>.github.io/<your-repo>/"
+          message: "CI/CD workflow: Тесты завершены и отчет опубликован на GitHub Pages ✅"
