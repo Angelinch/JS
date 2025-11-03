@@ -1,4 +1,4 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
@@ -6,17 +6,17 @@ on:
       - develop
 
 jobs:
-  test-and-deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: '22'
 
       - name: Install dependencies
         run: npm ci
@@ -27,19 +27,12 @@ jobs:
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: html-report
+          name: test-report
           path: reports/html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./reports/html
-          publish_branch: gh-pages
-
       - name: Send Telegram notification
-        uses: appleboy/telegram-action@v0.6.0
+        uses: appleboy/telegram-action@v0.5.3
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
-          message: "✅ Тесты завершены! Отчёт опубликован на GitHub Pages."
+          message: "✅ Тесты завершены! Отчёт доступен в артефактах workflow."
