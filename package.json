@@ -9,26 +9,10 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "test:ci": "jest --runInBand", 
+    "test:ci": "jest --runInBand",
     "allure:serve": "allure serve reports/allure-results",
     "allure:generate": "allure generate reports/allure-results --clean --report-dir reports/allure-report",
     "allure:open": "allure open reports/allure-report"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "reporters": [
-      "default",
-      ["jest-html-reporters", {
-        "publicPath": "reports/html",
-        "filename": "report.html",
-        "expand": true,
-        "pageTitle": "Test Report",
-        "includeFailureMsg": true,
-        "includeConsoleLog": true
-      }]
-    ],
-    "testMatch": ["**/specs/**/*.test.ts"]
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

@@ -1,51 +1,65 @@
-name: CI
+name: CI Tests and Report
 
 on:
   push:
     branches:
       - develop
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Tests and Generate Report
+      - name: Run tests
         run: npm test
-        env:
-          NODE_OPTIONS: "--max-old-space-size=1024"
 
-      - name: Upload HTML Report
+      - name: Upload Jest HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: jest-html-report
           path: reports/html
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Jest HTML Report
+        run: npm test
+
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports/html
+          publish_branch: gh-pages
 
-      - name: Send Telegram notification
-        uses: appleboy/telegram-action@v0.4.1
+      - name: Notify Telegram
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TG_CHAT_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
-          message: |
-            - CI Pipeline finished
-            - Branch: ${{ github.ref_name }}
-            - Commit: ${{ github.sha }}
-            - Run URL: ${{ github.run_url }}
+          message: "CI completed! Check the report at https://<your-username>.github.io/<your-repo>/"
